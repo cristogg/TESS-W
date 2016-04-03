@@ -7,14 +7,6 @@
 
 //--- Arduino 1.6.5 ------
 
-/*
-#define wifi_ssid "AstroHenares"
-#define wifi_password "astrohenaresyngc457"
-#define mqtt_server "192.168.0.101"
-#define wifi_ssid "WLAN_3395"
-#define wifi_password "47b3060084660517688a"
-*/
-
 #define mqtt_server "astrix.fis.ucm.es"  //147.96.67.45
 //Para los TESS usuario: tess, passwd: xxxxxxxx
 //Para el recolector de medidas usuario: tessdb passwd: yyyyyyy
