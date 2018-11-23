@@ -91,22 +91,19 @@ int nDi;
 
 #define mqtt_port 1883
 #define mqtt_server_upm "rich.dia.fi.upm.es"  //DEBE leerse de broker, pero algo falla
-#define mqtt_user_upm "guest"
-#define mqtt_password_upm "ciclope"
+#define mqtt_user_upm "xxxxxx"
+#define mqtt_password_upm "xxxxxx"
 
 #define mqtt_server_ucm "astrix.fis.ucm.es"  //147.96.67.45
-#define mqtt_user_ucm "tess"
-#define mqtt_password_ucm "k0L1vr1Sl0w"
-//Para el recolector de medidas usuario: tessdb passwd: k0L1vr1F4st
+#define mqtt_user_ucm "xxxxxx"
+#define mqtt_password_ucm "xxxxx"
 
 #define mqtt_server_mosquito "test.mosquitto.org"
 #define mqtt_server_192 "192.168.1.6"
 
 #define mqtt_server_local "192.168.1.33"
-#define mqtt_user_local "publisher" 
-#define mqtt_password_local "k0L1vr1Sl0w"
- //para el recolector: subscriber k0L1vr1F4st
-
+#define mqtt_user_local "xxxxxx" 
+#define mqtt_password_local "xxxxxx"
 //#define reads_topic "tess/coslada4/reads"
 String rdtopic;
 //#define status_topic  "tess/coslada4/status"
@@ -1123,115 +1120,6 @@ float HzToMag(float HzTSL )
 //{"seq":10308, "name":TESS-Madrid-01, "freq":7384.00, "mag":11.29, "tamb":23.51, "tsky":23.53, "wifidBm":-70}
 
 //-------Analiza cadena recibida----------------------
-/*
-void ProcesarTess(unsigned int leidos)
-{
-  String Cad, CadMeteo;
- char aux[200], auxi[20];
- int mv;
- float au;
-
-    while (leidos > 0)      //mientras haya datos en el buffer
-    {
-       if (buff_meteo[p_rd] == '<' ) {         // Empieza cadena       
-          abreparen = 1;
-          posmeteo = 0;
-          for (int kon = 0; kon < 200; kon++) //limpia cadena
-           Meteo[kon]= 0;
-       }
-       if (abreparen == 1) {
-          Meteo[posmeteo] = buff_meteo[p_rd];
-          posmeteo++;
-          if (posmeteo > 200)
-            posmeteo = 0;
-
-          BufTess[posBuf] = buff_meteo[p_rd];
-          posBuf++;
-          if (posBuf > 200)
-            posBuf = 0;
-       }
-       if ((buff_meteo[p_rd] == '>' ) && (posmeteo <= 6)  ) {
-          Meteo[posmeteo]= 0;
-          CadMeteo = Meteo;
-          posmeteo = 0;
-       }
-
-       if ((buff_meteo[p_rd] == '>' )   )  // ha terminado un mensaje de comandos
-       {
-          Meteo[posmeteo]= 0;
-          CadMeteo = Meteo;
-          posmeteo = 0;        
-          Cad = CadMeteo.substring(4,9);         //se toma el valor  
-          if   (CadMeteo.indexOf("<tA") >= 0) {  //y se busca a que corresponde        
-             CuentaRx_tA++;
-             au = atof(Cad.c_str())/100.0 + OfsetTamb;
-             if((au > -50) && (au < 80))
-               TAmbiente = au;
-             TAmbienteM += TAmbiente;
-          }
-          else if  ( CadMeteo.indexOf("<tO") >= 0) {
-             CuentaRx_tO++;
-             au = atof(Cad.c_str())/100.0;
-             if((au > -50) && (au < 50))
-                TObjeto = au;
-             TObjetoM += TObjeto;
-          }
-          else if  (CadMeteo.indexOf("<f") >= 0)  {
-            if(Meteo[2] == 'H') {   // H son hercios, mucha luz             
-               if(Meteo[3] != '-'){ //con "-" el micro indica fuera de rango
-                 Frecuencia =  atoi(Cad.c_str());
-               //  FrecuenciaM += Frecuencia;
-               //  CuentaRxFrecuencia++;
-
-                 Magnitud = HzToMag( Frecuencia);               
-               }
-               else {
-                 Magnitud = 0;
-                 Frecuencia =0;
-               }
-            }
-            else if (Meteo[2]== 'm') {  //m son milihercios, cielo oscuro 
-                 Frecuencia = atof(Cad.c_str())/1000.0;
-             //    FrecuenciaM += Frecuencia;
-             //    CuentaRxFrecuencia++;
-
-              Magnitud = HzToMag( Frecuencia);
-              //   mv = 100 * (HzToMag(ConstI * Frecuencia)) ;
-              //   Magnitud = (mv/100.0) + OfsetMV;
-            }
-            FrecuenciaM += Frecuencia;
-            CuentaRxFrecuencia++;            
-            MagnitudM += Magnitud;
-            CuentaRxMag++;
-          }
-          else if  (CadMeteo.indexOf("<mZ") >= 0) { //ultimo dato en llegar
-          //   F_TAmbiente = TAmbiente;
-          //   F_TObjeto = TObjeto;
-           //  F_Magnitud = Magnitud;
-           //  F_Frecuencia = Frecuencia;
-             
-             BufTess[posBuf] = 0;
-            CadTess = BufTess; 
-            if (!SDcardOK) {             //si hay SD solo saco cuando se escribe en SD
-                if (T5sg >5) { //evita sacar por serie los primeros 5sg para evitar raton
-                  Serial.println(CadTess.c_str() );
-                  T5sg = 51;
-                }
-            }  
-             CadTess = CadTess + "\r\n";           
-             posBuf = 0;                //cadena grande completa, reinicio cadena
-             BufCompleto = 1;             
-             RecibidoTess = 1;
-             }
-          }
-          p_rd++;
-         if(p_rd >= TAMBUFF)
-           p_rd = 0;
-         leidos--;
-         nd--;
-    }
-}
-*/
 
 //------------------------------------------------------------
 void printDirectory(File dir, int numTabs) {
@@ -1712,21 +1600,6 @@ int get_heading(const vector *a, const vector *m, const vector *p)
   if (heading < 0)
      heading += 360;
 
-  //Presenta lecturas
- // mxs++;
-/*  if (Pxs >= 4) {// si llegan mas de 4 mensajes por segundo, se promedian 4 lecturas
-  // promedia_heading();
-    Serial.print("Pxs ") ;
-    Serial.println(Pxs);
-  } 
-*/  
-/*
-  TESS->PBroll->Position = (int)(roll);
-  TESS->Label17->Caption = "Alabeo: " +  (AnsiString)(RoundTo(roll,-1));
-  TESS->PBpitch->Position = (int)(pitch);
-  TESS->PBheading->Position = (int)(heading*100/360);
-*/
-
   return heading;
 }
 
@@ -1811,23 +1684,6 @@ void ProcesarTessFull(unsigned int leidos)
                 digitalWrite(HeatPin,LOW);
             }    
 
-            
-            
-/*
-            if (Frecuencia < 50000 ) {
-                TESS->Lmv->Caption = (AnsiString) (RoundTo(Magnitud ,-2) );
-                TESS->LHz->Caption = (AnsiString)(RoundTo( Frecuencia ,-3) );
-                TESS->LmvCI->Caption = (AnsiString) (RoundTo(HzToMag(GainF *Frecuencia) ,-2) );
-                TESS->Lnelm->Caption = (AnsiString)(RoundTo(MagnitudVisual(Magnitud), -1));
-            }
-            else {
-                 TESS->Lmv->Caption = "--"; //fuera de rango
-                 TESS->Lnelm->Caption = "--";
-                 TESS->LHz->Caption = "--";
-                 TESS->LmvCI->Caption ="--";
-
-            }
-*/            
           }
 //--------------------------------------------------------------
           else if  ( CadMeteo.indexOf("<aY") >= 0) {
@@ -1870,28 +1726,6 @@ void ProcesarTessFull(unsigned int leidos)
              BufCompleto = 1;             
              RecibidoTess = 1;              
              RecAM++;             
-/*          float tt;
-         tt = a_avg.y;    // para dejar el original
-          a_avg.y = a_avg.x;
-          a_avg.x = tt;
-          tt = m_avg.y;
-          m_avg.y = m_avg.x;
-          m_avg.x = tt;
-  */
-  /*
-          if(TESS->CBejesW->State == cbChecked )
-          {
-             tt = a_avg.y;       // para girar
-             a_avg.y = a_avg.z;
-             a_avg.z =  tt;
-             tt = m_avg.y;
-             m_avg.y = m_avg.z;
-             m_avg.z =  tt;
-
-             a_avg.x = -1.0 * a_avg.x;
-             m_avg.x = -1.0 * m_avg.x;
-          }
-*/
              if ( mx==0 && my==0 && mz==0 )
                 ;   //si todas las lecturas =0 es que no hay sensor
              else if (RecAM == 6) //Asegura haber recibido los 6 parametros.
