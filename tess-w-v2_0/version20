@@ -1,0 +1,29 @@
+--------  TESS-W  firmware 2.0  -----------
+---------- 4 de mayo del 2018 ------------ 
+
+Novedades respecto a la versión 1.0
+
+1- Los fotómetros salen de fábrica con la configuración básica, solo es necesario editar la calibración y la configuración de red. 
+Solo sería necesario un reset total para cambiar de broker o de nombre.
+
+2- El sensor queda diferenciado com AP al quedar su nombre en la forma TESS-starsxxx.  S
+ i se realiza un borrado completo de la configuración, el punto de acceso aparecerá con el nombre genérico TESS-W.
+
+3- Añadido mensaje de red broadcast que permite usar el programa java TESS-J  
+Este sencillo programa, además de mostrar las lecturas, muestra la IP del sensor, necesaria si se quiere usar el programa de captura local. 
+También es posible usar el programa Android  tessp.apk, que mostrará todos los fotómetro presentes con este nuevo firmware. 
+
+4- El calefactor contra rocío no se desactiva de día si la temperatura es menor de 5°C. 
+
+5- Se lee acelerómetro magnetómetro  por I2c, en paralelo con la termopila.
+El resultado en altura y acimut se envía localmente en el mensaje broadcast como cadena json.
+
+6- Se puede deshabilitar el envío MQTT poniendo off como nombre de broker.
+
+7- Se puede usar cualquier nombre de broker que contenga la cadena tess, en este caso la autentificación es la 
+misma que para nombres con ucm. 
+
+8- El nombre de cliente mqtt pasa a  ser el nombre del sensor.
+
+Cristobal Garcia
+
