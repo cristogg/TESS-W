@@ -1,5 +1,5 @@
 
-#TESS (Telescope Encoder & Sky Sensor).
+TESS (Telescope Encoder & Sky Sensor).
 # TESS-W
 TESS-W versión send data to cloud server for STARS4ALL european proyect.
 TESS-W use an ESP8266 module to send data to a common repository using MQTT protocol. 
