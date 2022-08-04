@@ -123,7 +123,7 @@ int nDi;
 
 #define mqtt_server_ucm "astrix.fis.ucm.es"  //147.96.67.45
 #define mqtt_user_ucm "tess"
-#define mqtt_password_ucm "k0L1vr1Sl0w"
+#define mqtt_password_ucm "xxxxxxxx"
 //Para el recolector de medidas usuario: tessdb passwd: k0L1vr1F4st
 
 #define mqtt_server_mosquito "test.mosquitto.org"
@@ -131,8 +131,8 @@ int nDi;
 
 #define mqtt_server_local "192.168.1.33"
 #define mqtt_user_local "publisher" 
-#define mqtt_password_local "k0L1vr1Sl0w"
- //para el recolector: subscriber k0L1vr1F4st
+#define mqtt_password_local "xxxxxxxx"
+ 
 
 //#define reads_topic "tess/coslada4/reads"
 String rdtopic;
