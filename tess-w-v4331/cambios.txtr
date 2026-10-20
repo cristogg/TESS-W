@@ -1,1 +1,143 @@
 
+//---24/11/2021  Version 4.0 PCB TESS-W4C
+//--PCB nueva conESP32 en D1 mini, los pines 26 y 33 no van, paso señal a 18 19
+//Añadida precaucion de poner un SSID muy corto.
+//Se arregla la medida de entrada analógica.
+//10/01/2022  
+// Edit CI no salia si habia wifi, corregido.
+// Se lee Analog IN en VPS pin 19 y sale en cadenas JSON
+//
+//-----------------------------------------------------------------------------------------
+//-----  12/2/2022  Version 4.1  ESP32      -----------------------------------------------
+//--  Placa WEMOS D1 MINI ESP32 en pcv v2.0   ----
+//-----------------------------------------------------------------------------------------
+//--Uso de SD + Sleep.------ 
+//Promedia 10 lecturas o lo recibido en 30sg.
+//Guarda cada 10 minutos.
+//10mA apagado, 80mA encendido
+//LED azul: flash largo al inicio corto antes de sleep.
+//Si no hay SD funciona normal
+//
+//----- 20/04/2022--------------
+//Solo si hay RTC se intenta configurar SD, de lo contrario el canal verde es ocupado por la SD
+
+//----- 10/05/2022--------------
+//Se añaden milesimas de hz en frecuencias bajas.
+//Añadido WatchDog de 5sg
+// ---- I2C con LOGGER en placas v2 --------
+// Para conectar Logger Deek-Robot ID8122 directamente configurar I2C:
+//  Wire.begin(22,21);  //pcb v2 con D1mini 32 con RTC y SD. Implica intercambiar Dato y CLK en termopila.
+
+//----- 26/05/2022-- v4.11 ------------
+//Se evita mag = 24 en RGB con saturacion de brillo. 
+//Compilado a bin con I2C estandar (para no usar SD)
+
+//----- 26/05/2022-- v4.12 ------------
+//Corregido bug en frecuencia Blue
+
+//----- 26/05/2022-- v4.13 ------------
+//Identificacion fisicas de canales con IOs en pcb v2 
+//-- Posicion Sensores en PCB v2 -----------------
+//--   IOs    Frecuencias   Colores --------------
+//   25  18 ->  F1  F3  ->  750  R
+//   27  19 ->  F2  F4  ->  650  B 
+//------------------------------------------------
+//El pin de interruptPinG se intercambia con el pin de interruptPinR 
+//Formato MAC corregido
+//Corregida cadena json de registro.
+
+//----- 27/06/2022--------------
+//Corregido comillas en json
+
+//----- 30/06/2022-- v4.14------------
+//en 1 canal json compatible con v3
+
+//----- 17/08/2022-- v4.15------------
+//en 1 canal json compatible con v2 
+//en 4 canal json v3 
+
+//----- 17/08/2022-- v4.16------------
+//descarta lecturas erroneas de temperaturas
+//----- 17/08/2022-- v4.16DL------------
+//I2C intercambia CLK con SDA para leer Data Logger, necesario no cruzar CLK y SDA en termopila.
+//
+
+//----- 7/11/2022-- v4.17------------
+//Eliminado comando serie 'K' ya que a veces se disparaba en los arranques en modo logger y
+//cambiaba la hora al RTC.
+//----- 7/11/2022-- v4.18------------
+//Magnitud max pasa de 24 a 25
+//Se compila en dos versiones, una para el datalogger cambiando el I2C
+//pin IO35 no vale para Heatpin, pasa al IO32
+//----- 7/11/2022-- v4.19------------
+//Aparece MAC en pagina de configuracion de cara a automatizar la configuración
+//----- 12/02/2023-- v4.2------------
+//----Pagina web v3 para añadir el offset mHz
+//----- 23/02/2023-- v4.21------------
+//---- Inicia con un solo CI en la web, en vez de 4
+//----- 12/02/2023-- v4.23 ------------
+//----Si hay RTC y no SD, entra en SLEEP por 10 min.
+// en el contador de seq pone el numero de boot
+
+//----- 14/06/2023-- v4.24 ------------
+//---En caso de SD, corregido promediado de lecturas y Mag se calcula al final
+//eliminada opcion de funcionamiento con wifi, ya que no se puede editar el RTC
+//Queda que sin SD pero con RTC arranca comoo AP, para poder poner reloj en hora.
+//No SD, SI RTC y encuentra wifi, conecta envia y sleep.
+//--- 14/06/2023 --- Añadido hash en todos los mensajes con los tres últmos caracteres de la MAC
+//  29/11/2023
+//-- Añadida en linea 984     else  HayWifi = true;
+//-- Añadida opción de Broker generico, aunque con user y passw igual a ucm.
+// En 4C con D1 el led azul hace un parpadeo al inicio. En pcb v4.1 el led está al reves
+// 12/12/2023
+// Añadid posible broker genérico con las mismas credenciales de la UCM
+
+//----- 18/02/2024  v4.26  ---------
+// AnalogA0 envia el max de 5 lecturas por UDP
+// Variable nueva, Analog60sg envia max de 60sg
+// Añadido RESET por Watch dog para evitar el intento de reconexion continua.
+
+//----- 18/02/2024  v4.27  ---------!!!!! BUG corregido, en caso de 4 ch
+// PubSubClient.h, #define MQTT_MAX_PACKET_SIZE 400, aumenta de 300 a 400
+// Medida de tiempo de reconexion MQTT corregido
+// HayWifi = 1 cada vez que hay un envio mqtt ok, evitara que pag web salga como AP habiendo wifi
+
+//----- 18/04/2024  v4.28  ------
+//Desactivado WDT en la conexión MQTT, para evitar un reset cuando el servidor broker no acepta conexion
+//No es suficiente, finalmente dejo WDT en 30sg durante la conexión mqtt y luego pasa a 5s
+//Quizas el problema era que 
+// despues de:  now2 = millis();  //cada 5 seg se comprueba si hay wifi por si se perdio
+// Habia un:  mqttcon = 0; innecesario. Lo he quitado y parece que mejor.
+// 
+//Check connection mqtt.
+//Conecting MQTT: astrix.fis.ucm.es-port: 1883
+//Conecting mqtt ucm
+//Connected UCM OK
+//Reconecting Time ms: 2714
+//Lecturas promediadas: 60.00
+//{"seq":2454, "rev":2, "name":"stars2002", "freq":35340.62, "mag":9.13, "tamb":22.11, "tsky":20.75, "wdBm":-75, "hash":"1B0"}
+
+//----- 18/04/2024  v4.29  ------
+//Correccion calculo de medias de frecuencias en canales RGB
+//----- 18/06/2024  v4.30  ------
+//Correccion de frecuencia  en canal 1 para oscuridad total
+
+//------6/10/2024  v4.31  -------
+//Rescatado contador de canal 1, CuentaRxFrecuencia++; que daba origen a lecturas cero
+//Corregido CI en mensaje de registro
+
+//------6/10/2024  v4.32  -------
+//Añadido al registro offset Hz
+//Añadido al registro versión firmware y date  
+//
+//------17/03/2025  v4.33 DLog  -------
+//Apaga el led en pcb 4.2 despues del setup. El LED se instala para Data Logger.
+//En PCB v4.2 el led se apaga con HIGH
+
+//--------------------------------------------------------------
+//------9/12/2025  v4.331 DLog  -------
+//IDE:  1.8.10
+//CORE: 3.1.1 
+//Ahora no se incrementa contador de lectura en canal 1 si no hay interrupción.
+//Desactivado el WDT, con el nuevo core debe estudiarse 
+
